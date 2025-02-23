@@ -2,7 +2,9 @@ package org.auroracast
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
@@ -15,23 +17,24 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 import auroracast.composeapp.generated.resources.Res
 import auroracast.composeapp.generated.resources.compose_multiplatform
+import dev.icerock.moko.geo.compose.BindLocationTrackerEffect
+import dev.icerock.moko.geo.compose.LocationTrackerAccuracy
+import dev.icerock.moko.geo.compose.rememberLocationTrackerFactory
 
 @Composable
 @Preview
 fun App() {
     MaterialTheme {
-        var showContent by remember { mutableStateOf(false) }
-        Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-            Button(onClick = { showContent = !showContent }) {
-                Text("Click me!")
-            }
-            AnimatedVisibility(showContent) {
-                val greeting = remember { Greeting().greet() }
-                Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Image(painterResource(Res.drawable.compose_multiplatform), null)
-                    Text("Compose: $greeting")
-                }
-            }
+       val factory= rememberLocationTrackerFactory(LocationTrackerAccuracy.Best)
+        val locationTracker= remember { factory.createLocationTracker()}
+    BindLocationTrackerEffect(locationTracker)
+        Column ( modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally) {
+
+
         }
+
     }
+
 }
