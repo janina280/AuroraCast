@@ -1,4 +1,4 @@
-package ui
+package ui.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -9,11 +9,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -44,6 +46,7 @@ import dev.icerock.moko.geo.compose.rememberLocationTrackerFactory
 import dev.icerock.moko.permissions.PermissionState
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import ui.forecast.getImage
 
 
 @Composable
@@ -119,7 +122,7 @@ fun HomeScreenContent(weather: WeatherResource, navController: NavController) {
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth().align(Alignment.TopStart).padding(16.dp)
         ) {
-            Text(text = "${weather.name}", color = Color.White)
+            Text(text = "City: ${weather.name}", color = Color.White)
             Icon(
                 painter = painterResource(Res.drawable.ic_notification),
                 contentDescription = null,
@@ -176,6 +179,19 @@ fun HomeScreenContent(weather: WeatherResource, navController: NavController) {
                 Spacer(modifier = Modifier.size(16.dp))
             }
         }
+        Button(
+            onClick = {
+                navController.navigate("forecast")
+            },
+            modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp).fillMaxWidth().height(48.dp),
+            shape = RoundedCornerShape(16.dp),
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)){
+                Text(
+                    text = "Forecast",
+                    color = Color.Black,
+                )
+            }
+
     }
 }
 
@@ -195,17 +211,5 @@ fun WeatherInfoItem(image: DrawableResource, title: String, value: String) {
         Text("|", color = Color.White)
         Spacer(modifier = Modifier.size(8.dp))
         Text(text = value, color = Color.White)
-    }
-}
-
-fun getImage(data: String):DrawableResource{
-    return if(data.lowercase().contains("rain")){
-        Res.drawable.ic_cloud
-    }
-    else if(data.lowercase().contains("cloud")){
-        Res.drawable.ic_cloud
-    }
-    else{
-        Res.drawable.ic_cloud
     }
 }
