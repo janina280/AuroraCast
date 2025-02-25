@@ -1,5 +1,6 @@
 package data.networks
 
+import data.models.ForecastResponse
 import data.models.WeatherResource
 import dev.icerock.moko.geo.LatLng
 import io.ktor.client.HttpClient
@@ -24,6 +25,16 @@ class ApiService {
 
     suspend fun getWeather(location: LatLng): WeatherResource {
         return httpClient.get("https://api.openweathermap.org/data/2.5/weather?") {
+            parameter("appid", API_KEY)
+            parameter("units", "metric")
+            parameter("lon", location.longitude)
+            parameter("lat", location.latitude)
+        }.body()
+    }
+
+
+    suspend fun getForecast(location: LatLng): ForecastResponse {
+        return httpClient.get("https://api.openweathermap.org/data/2.5/forecast?") {
             parameter("appid", API_KEY)
             parameter("units", "metric")
             parameter("lon", location.longitude)
