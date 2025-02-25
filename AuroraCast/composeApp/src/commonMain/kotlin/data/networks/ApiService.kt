@@ -1,6 +1,7 @@
 package data.networks
 
 import data.models.WeatherResource
+import dev.icerock.moko.geo.LatLng
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -20,20 +21,13 @@ class ApiService {
             })
         }
     }
-    suspend fun getWeatherByLatLong(lat: Double, lon: Double):WeatherResource {
-        return httpClient.get("https://api.openweathermap.org/data/2.5/weather?")
-        {
-            parameter("lat", lat)
-            parameter("lon", lon)
-            parameter("appid", API_KEY)
-        }.body()
-    }
 
-    suspend fun getWeatherByCity(city: String): WeatherResource {
-        return httpClient.get("https://api.openweathermap.org/data/2.5/weather?")
-        {
-            parameter("q", city)
+    suspend fun getWeather(location: LatLng): WeatherResource {
+        return httpClient.get("https://api.openweathermap.org/data/2.5/weather?") {
             parameter("appid", API_KEY)
+            parameter("units", "metric")
+            parameter("lon", location.longitude)
+            parameter("lat", location.latitude)
         }.body()
     }
 

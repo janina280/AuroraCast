@@ -1,11 +1,11 @@
 package data.repository
 
 import data.networks.ApiService
+import dev.icerock.moko.geo.LatLng
 
 class WeatherRepository {
     private val apiService=ApiService()
 
-    suspend fun getWeatherByLatLong(lat: Double, lon: Double) = apiService.getWeatherByLatLong(lat, lon)
-    suspend fun getWeatherByCity(city: String) = apiService.getWeatherByCity(city)
+    suspend fun fetchWeather(location: LatLng) = apiService.getWeather(location)
 
 }

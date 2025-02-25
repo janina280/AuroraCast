@@ -20,7 +20,9 @@ ktorClientSerialization = "2.3.2"
 kotlinx-coroutines = "1.8.1"
 lifecycleViewmodelCompose = "2.8.4"
 materialIconsExtended = "1.7.8"
+navigationComposeVersion = "2.7.0-alpha07"
 resources = "1.5.0"
+navigationCompose = "2.8.7"
 
 [libraries]
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
@@ -48,7 +50,9 @@ ktor-client-okhttp={module="io.ktor:ktor-client-okhttp", version.ref="ktor"}
 ktor-client-darwin={module="io.ktor:ktor-client-darwin", version.ref="ktor"}
 ktor-serialization-kotlinx-json={module="io.ktor:ktor-serialization-kotlinx-json", version.ref="ktor"}
 lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
+navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationComposeVersion" }
 resources = { module = "org.jetbrains.compose.resources:resources", version.ref = "resources" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 
 
 [plugins]

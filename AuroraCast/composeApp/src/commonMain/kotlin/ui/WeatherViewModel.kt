@@ -18,66 +18,75 @@ import kotlinx.coroutines.launch
 class WeatherViewModel(private val locationTracker: LocationTracker
 ): ViewModel() {
 
-    private val _permissionState= MutableStateFlow(PermissionState.NotDetermined)
-    val permissionState=_permissionState.asStateFlow()
-    private val _appState= MutableStateFlow<AppState>(AppState.Loading)
-    val appState=_appState.asStateFlow()
-    private val weatherRepository= WeatherRepository()
+    val repository = WeatherRepository()
+    private val _state = MutableStateFlow<AppState>(AppState.Loading)
+    val state = _state.asStateFlow()
+    private val _permissionState = MutableStateFlow(PermissionState.NotDetermined)
+    val permissionState = _permissionState.asStateFlow()
 
     init {
         viewModelScope.launch {
-            _permissionState.value=locationTracker.permissionsController.getPermissionState(
-                Permission.LOCATION)
+            _permissionState.value =
+                locationTracker.permissionsController.getPermissionState(Permission.LOCATION)
         }
     }
 
-    fun provideLocationPerMission(){
+    private fun fetchWeather(location: LatLng) {
         viewModelScope.launch {
-            val isGranted=locationTracker.permissionsController.isPermissionGranted(Permission.LOCATION)
-                if(isGranted){
-                    return@launch
-                }
+            _state.value = AppState.Loading
             try {
-                locationTracker.permissionsController.providePermission(Permission.LOCATION)
-                _permissionState.value=PermissionState.Granted
-            }
-            catch (e:DeniedAlwaysException){
-                _permissionState.value=PermissionState.DeniedAlways
-            }
-            catch (e:DeniedException){
-                _permissionState.value=PermissionState.Denied
-            }
-            catch (e:Exception){
-                e.printStackTrace()
-            }
-        }
-
-    }
-
-    private fun featchWeather(lat:Double,lon:Double) {
-        viewModelScope.launch {
-            _appState.value = AppState.Loading
-            try {
-                val result = weatherRepository.getWeatherByLatLong(lat, lon)
-                _appState.value = AppState.Success(result)
+                val result = repository.fetchWeather(location)
+                _state.value = AppState.Success(result)
             } catch (e: Exception) {
-                _appState.value = AppState.Error(e.message.toString())
-                e.printStackTrace()
+                println(e.message)
+                _state.value = AppState.Error("Failed to load weather")
             }
         }
     }
-    suspend fun updateLocationData(){
-        locationTracker.startTracking()
-        val location=locationTracker.getLocationsFlow().first()
-        locationTracker.stopTracking()
-        featchWeather(location.latitude,location.longitude)
+
+    fun provideLocationPermission() {
+        viewModelScope.launch {
+            val isGranted =
+                locationTracker.permissionsController.isPermissionGranted(Permission.LOCATION)
+            if (isGranted) {
+                _permissionState.value = PermissionState.Granted
+                return@launch
+            }
+            try {
+                locationTracker.permissionsController.providePermission(
+                    Permission.LOCATION
+                )
+                _permissionState.value = PermissionState.Granted
+            } catch (e: DeniedAlwaysException) {
+                _permissionState.value = PermissionState.DeniedAlways
+            } catch (e: DeniedException) {
+                _permissionState.value = PermissionState.Denied
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+        }
     }
+
+    fun updateLocationData() {
+        viewModelScope.launch {
+            val latLng = getUserLocation()
+            fetchWeather(latLng)
+        }
+    }
+
+    private suspend fun getUserLocation(): LatLng {
+        locationTracker.startTracking()
+        val location = locationTracker.getLocationsFlow().first()
+        locationTracker.stopTracking()
+        return location
+    }
+
 
 }
 
-sealed class AppState{
-    object Loading:AppState()
-    data class Success(val data: WeatherResource):AppState()
-    data class Error(val message:String):AppState()
-
+sealed class AppState {
+    object Loading : AppState()
+    data class Success(val data: WeatherResource) : AppState()
+    data class Error(val message: String) : AppState()
 }
