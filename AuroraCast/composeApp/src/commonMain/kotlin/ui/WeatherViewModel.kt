@@ -40,11 +40,12 @@ class WeatherViewModel(private val locationTracker: LocationTracker
             try {
                 locationTracker.permissionsController.providePermission(Permission.LOCATION)
                 _permissionState.value=PermissionState.Granted
-            }catch (e:DeniedException){
-                _permissionState.value=PermissionState.Denied
             }
             catch (e:DeniedAlwaysException){
                 _permissionState.value=PermissionState.DeniedAlways
+            }
+            catch (e:DeniedException){
+                _permissionState.value=PermissionState.Denied
             }
             catch (e:Exception){
                 e.printStackTrace()

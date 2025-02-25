@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -24,17 +25,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
-
 import auroracast.composeapp.generated.resources.Res
-import auroracast.composeapp.generated.resources.compose_multiplatform
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import dev.icerock.moko.geo.compose.BindLocationTrackerEffect
 import dev.icerock.moko.geo.compose.LocationTrackerAccuracy
 import dev.icerock.moko.geo.compose.rememberLocationTrackerFactory
 import dev.icerock.moko.permissions.PermissionState
+import org.jetbrains.compose.resources.painterResource
 import ui.AppState
 import ui.WeatherViewModel
 
@@ -87,12 +85,19 @@ fun App() {
                                     modifier = Modifier.fillMaxWidth().align(Alignment.TopStart).padding(16.dp)){
                                     Text(text = data.name, color = Color.White)
                                     Icon(
-                                        imageVector = Icons.Filled.Notifications,
+                                       imageVector =Icons.Filled.Notifications,
                                         contentDescription = null,
                                         tint = Color.White,
                                         modifier = Modifier.size(24.dp)
 
                                     )
+                                }
+                                Column(modifier = Modifier.fillMaxSize().align(Alignment.Center),
+                                        verticalArrangement = Arrangement.Center,
+                                        horizontalAlignment = Alignment.CenterHorizontally)
+                                {
+                                    Spacer(modifier = Modifier.size(16.dp))
+
                                 }
 
                             }
@@ -115,3 +120,6 @@ fun App() {
 
     }
 }
+
+
+

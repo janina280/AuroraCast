@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-    alias(libs.plugins.kotlinSerialization)
+    kotlin("plugin.serialization")
 }
 
 kotlin {
@@ -46,6 +46,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
 
+            //Add Ktor Dependency
             implementation(libs.ktor.client.core)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.ktor.serialization.kotlinx.json)
@@ -56,10 +57,13 @@ kotlin {
 
             api(libs.geo)
             api(libs.geo.compose)
+            api(libs.androidx.material.icons.extended)
+
         }
 
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
+
         }
     }
 }
@@ -92,6 +96,7 @@ android {
 }
 
 dependencies {
+    implementation("androidx.compose.ui:ui-android:1.7.8")
     debugImplementation(compose.uiTooling)
 }
 
