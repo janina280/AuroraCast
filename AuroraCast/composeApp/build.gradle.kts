@@ -57,7 +57,7 @@ kotlin {
 
             api(libs.geo)
             api(libs.geo.compose)
-            api(libs.androidx.material.icons.extended)
+            implementation(libs.androidx.material.icons.extended)
 
             //add view model
 
@@ -102,6 +102,7 @@ android {
 dependencies {
     implementation("androidx.compose.ui:ui-android:1.7.8")
     implementation(libs.androidx.navigation.compose)
+    implementation("androidx.navigation:navigation-runtime-android:2.9.0-alpha06")
     debugImplementation(compose.uiTooling)
 }
 

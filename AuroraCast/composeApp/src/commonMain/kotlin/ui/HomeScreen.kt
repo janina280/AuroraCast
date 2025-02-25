@@ -33,6 +33,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import auroracast.composeapp.generated.resources.Res
+import auroracast.composeapp.generated.resources.ic_cloud
+import auroracast.composeapp.generated.resources.ic_humidity
+import auroracast.composeapp.generated.resources.ic_notification
+import auroracast.composeapp.generated.resources.ic_wind
 import data.models.WeatherResource
 import dev.icerock.moko.geo.compose.BindLocationTrackerEffect
 import dev.icerock.moko.geo.compose.LocationTrackerAccuracy
@@ -130,7 +134,7 @@ fun HomeScreenContent(weather: WeatherResource, navController: NavController) {
         ) {
             Spacer(modifier = Modifier.size(16.dp))
             Image(
-                painter = painterResource(getImage(weather.weather.getOrNull(0)?.main?:"")),
+                painter = painterResource(getImage((weather.weather.getOrNull(0)?.main?:""))),
                 contentDescription = null,
                 modifier = Modifier.size(120.dp)
             )
@@ -166,7 +170,7 @@ fun HomeScreenContent(weather: WeatherResource, navController: NavController) {
                 )
                 WeatherInfoItem(
                     image = Res.drawable.ic_humidity,
-                    title = "Wind",
+                    title = "Humidity",
                     value = "${weather.main?.humidity}%"
                 )
                 Spacer(modifier = Modifier.size(16.dp))
@@ -191,5 +195,17 @@ fun WeatherInfoItem(image: DrawableResource, title: String, value: String) {
         Text("|", color = Color.White)
         Spacer(modifier = Modifier.size(8.dp))
         Text(text = value, color = Color.White)
+    }
+}
+
+fun getImage(data: String):DrawableResource{
+    return if(data.lowercase().contains("rain")){
+        Res.drawable.ic_cloud
+    }
+    else if(data.lowercase().contains("cloud")){
+        Res.drawable.ic_cloud
+    }
+    else{
+        Res.drawable.ic_cloud
     }
 }
