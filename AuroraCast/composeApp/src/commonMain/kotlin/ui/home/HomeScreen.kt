@@ -2,6 +2,7 @@ package ui.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,8 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
@@ -35,8 +38,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import auroracast.composeapp.generated.resources.Res
-import auroracast.composeapp.generated.resources.ic_cloud
+import auroracast.composeapp.generated.resources.ic_down
 import auroracast.composeapp.generated.resources.ic_humidity
+import auroracast.composeapp.generated.resources.ic_location
 import auroracast.composeapp.generated.resources.ic_notification
 import auroracast.composeapp.generated.resources.ic_wind
 import data.models.WeatherResource
@@ -109,6 +113,7 @@ fun HomeScreen(navController: NavController) {
 
 @Composable
 fun HomeScreenContent(weather: WeatherResource, navController: NavController) {
+
     Box(
         modifier = Modifier.fillMaxSize().background(
             brush = Brush.verticalGradient(
@@ -122,7 +127,29 @@ fun HomeScreenContent(weather: WeatherResource, navController: NavController) {
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth().align(Alignment.TopStart).padding(16.dp)
         ) {
-            Text(text = "City: ${weather.name}", color = Color.White)
+            Row (
+                horizontalArrangement = Arrangement.Start
+            ){
+                Icon(
+                    painter = painterResource(Res.drawable.ic_location),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp),
+                    tint = Color.White
+                )
+                Spacer(modifier = Modifier.size(10.dp))
+                Text(text = "${weather.name }",
+                    style = MaterialTheme.typography.h6.copy(
+                    color = Color.White, fontWeight = FontWeight.Bold
+                ))
+                Spacer(modifier = Modifier.size(5.dp))
+
+                Icon(
+                    painter = painterResource(Res.drawable.ic_down),
+                    contentDescription = null,
+                    modifier = Modifier.size(9.dp),
+                    tint = Color.White
+                )
+            }
             Icon(
                 painter = painterResource(Res.drawable.ic_notification),
                 contentDescription = null,
@@ -145,11 +172,12 @@ fun HomeScreenContent(weather: WeatherResource, navController: NavController) {
 
             Column(
                 modifier = Modifier.padding(16.dp).fillMaxWidth()
-                    .clip(shape = RoundedCornerShape(16.dp))
-                    .background(color = Color.White.copy(alpha = 0.1f)).padding(16.dp),
+                    .clip(shape = RoundedCornerShape(16.dp)).border(1.dp, Color.White.copy(alpha = 0.6f))
+                    .background(color = Color.White.copy(alpha = 0.4f)).padding(16.dp),
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+
                 Text(
                     text = "${weather.main?.temp?.toInt()}°",
                     style = MaterialTheme.typography.h2.copy(
@@ -160,23 +188,24 @@ fun HomeScreenContent(weather: WeatherResource, navController: NavController) {
                 )
                 Spacer(modifier = Modifier.size(16.dp))
                 Text(
-                    text = weather.weather.getOrNull(0)?.description ?: "",
+                    text = weather.weather.getOrNull(0)?.description ?.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }?: "",
                     style = MaterialTheme.typography.h6.copy(
                         color = Color.White, fontWeight = FontWeight.Bold
                     )
                 )
-                Spacer(modifier = Modifier.size(16.dp))
+                Spacer(modifier = Modifier.size(20.dp))
                 WeatherInfoItem(
                     image = Res.drawable.ic_wind,
                     title = "Wind",
                     value = "${weather.wind?.speed} m/s"
                 )
+                Spacer(modifier = Modifier.size(20.dp))
                 WeatherInfoItem(
                     image = Res.drawable.ic_humidity,
-                    title = "Humidity",
+                    title = "Hum",
                     value = "${weather.main?.humidity}%"
                 )
-                Spacer(modifier = Modifier.size(16.dp))
+                Spacer(modifier = Modifier.size(20.dp))
             }
         }
         Button(
@@ -187,9 +216,13 @@ fun HomeScreenContent(weather: WeatherResource, navController: NavController) {
             shape = RoundedCornerShape(16.dp),
             colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)){
                 Text(
-                    text = "Forecast",
+                    text = "Forecast report",
                     color = Color.Black,
                 )
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = null,
+            )
             }
 
     }

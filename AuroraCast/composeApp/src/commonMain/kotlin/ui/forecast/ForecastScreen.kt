@@ -20,9 +20,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -37,6 +38,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import auroracast.composeapp.generated.resources.Res
 import auroracast.composeapp.generated.resources.ic_cloud
+import auroracast.composeapp.generated.resources.ic_cloud_simple
+import auroracast.composeapp.generated.resources.ic_rain
+import auroracast.composeapp.generated.resources.ic_sun
+import auroracast.composeapp.generated.resources.ic_thunderstorm
 import data.models.ForecastData
 import dev.icerock.moko.geo.compose.BindLocationTrackerEffect
 import dev.icerock.moko.geo.compose.LocationTrackerAccuracy
@@ -72,8 +77,16 @@ fun ForecastScreen(navController: NavController) {
             verticalAlignment = Alignment.CenterVertically
         ){
             IconButton(onClick = {navController.popBackStack()}){
-                Icon(imageVector = Icons.Default.ArrowBack, null)
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = null,
+                    tint = Color.White
+                )
             }
+            Text(text = "Back", style = MaterialTheme.typography.h5.copy(
+                    color = Color.White
+            ))
+
         }
 
         when(val forecastState=state.value){
@@ -83,7 +96,7 @@ fun ForecastScreen(navController: NavController) {
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ){
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(color = Color.Blue)
                     Text(
                         text="Loading...",
                         color = Color.White
@@ -177,10 +190,17 @@ fun ForecastRowItem(data: ForecastData) {
 
 fun getImage(data: String): DrawableResource {
     return if (data.lowercase().contains("rain")) {
-        Res.drawable.ic_cloud
-    } else if (data.lowercase().contains("cloud")) {
-        Res.drawable.ic_cloud
-    } else {
+        Res.drawable.ic_rain
+    } else if (data.lowercase().contains("cloud_simple")) {
+        Res.drawable.ic_cloud_simple
+    }
+    else if (data.lowercase().contains("sun")) {
+        Res.drawable.ic_sun
+    }
+    else if (data.lowercase().contains("thunderstorm")) {
+        Res.drawable.ic_thunderstorm
+    }
+    else {
         Res.drawable.ic_cloud
     }
 }
