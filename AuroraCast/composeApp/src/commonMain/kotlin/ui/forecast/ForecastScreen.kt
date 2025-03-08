@@ -175,7 +175,7 @@ fun ForecastRowItem(data: ForecastData) {
         modifier = Modifier.padding(8.dp)
             .height(155.dp)
     ) {
-        Text(text = "${data.main.temp?.toInt()}C", color = Color.White)
+        Text(text = "${data.main.temp?.toInt()}°C", color = Color.White)
         Spacer(modifier = Modifier.size(8.dp))
         Image(
             painter = painterResource(getImage(data.weather.getOrNull(0)?.main ?: "")),
@@ -189,19 +189,19 @@ fun ForecastRowItem(data: ForecastData) {
 
 
 fun getImage(data: String): DrawableResource {
-    return if (data.lowercase().contains("rain")) {
+    return if (data.lowercase().contains("rain") || data.lowercase().contains("drizzle")) {
         Res.drawable.ic_rain
-    } else if (data.lowercase().contains("cloud_simple")) {
+    } else if (data.lowercase().contains("clouds")) {
         Res.drawable.ic_cloud_simple
     }
-    else if (data.lowercase().contains("sun")) {
+    else if (data.lowercase().contains("clear")) {
         Res.drawable.ic_sun
     }
     else if (data.lowercase().contains("thunderstorm")) {
         Res.drawable.ic_thunderstorm
     }
     else {
-        Res.drawable.ic_cloud
+        Res.drawable.ic_sun
     }
 }
 
@@ -220,6 +220,6 @@ fun ForecastColumnItem(data: ForecastData) {
             modifier = Modifier.size(60.dp),
         )
         Spacer(modifier = Modifier.size(8.dp))
-        Text(text = "${data.main.temp?.toInt()}C", color = Color.White)
+        Text(text = "${data.main.temp?.toInt()}°C", color = Color.White)
     }
 }
