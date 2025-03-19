@@ -3,6 +3,7 @@ package ui.home
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,12 +21,15 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,7 +55,6 @@ import dev.icerock.moko.permissions.PermissionState
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import ui.forecast.getImage
-
 
 @Composable
 fun HomeScreen(navController: NavController) {
@@ -80,12 +83,15 @@ fun HomeScreen(navController: NavController) {
 
                     is AppState.Success -> {
                         val weather = (state.value as AppState.Success).data
-                        HomeScreenContent(weather, navController)
+                        HomeScreenContent(weather, navController, viewModel)
                     }
 
                     is AppState.Error -> {
                         val message = (state.value as AppState.Error).message
                         Text(text = message)
+                    }
+
+                    is AppState.GeoCity -> {
                     }
                 }
             }
@@ -106,13 +112,17 @@ fun HomeScreen(navController: NavController) {
                 }
             }
         }
-
-
     }
 }
 
 @Composable
-fun HomeScreenContent(weather: WeatherResource, navController: NavController) {
+fun HomeScreenContent(
+    weather: WeatherResource,
+    navController: NavController,
+    viewModel: WeatherViewModel
+) {
+    val searchQuery = remember { mutableStateOf(weather.name!!) }
+    val suggestions = remember { mutableStateOf<List<String>>(emptyList()) }
 
     Box(
         modifier = Modifier.fillMaxSize().background(
@@ -127,35 +137,62 @@ fun HomeScreenContent(weather: WeatherResource, navController: NavController) {
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth().align(Alignment.TopStart).padding(16.dp)
         ) {
-            Row (
-                horizontalArrangement = Arrangement.Start
-            ){
-                Icon(
-                    painter = painterResource(Res.drawable.ic_location),
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp),
-                    tint = Color.White
-                )
-                Spacer(modifier = Modifier.size(10.dp))
-                Text(text = "${weather.name }",
-                    style = MaterialTheme.typography.h6.copy(
-                    color = Color.White, fontWeight = FontWeight.Bold
-                ))
-                Spacer(modifier = Modifier.size(5.dp))
+            Row(
+                horizontalArrangement = Arrangement.Start,
+            ) {
+                Box(
+                    modifier = Modifier.size(50.dp, 70.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(Res.drawable.ic_location),
+                        contentDescription = null,
+                        modifier = Modifier.size(40.dp),
+                        tint = Color.White
+                    )
+                }
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedTextField(
+                        value = searchQuery.value, //weather.name.toString(),
+                        onValueChange = { query ->
+                            searchQuery.value = query
+                            viewModel.getCitySuggestions(query)
+                            suggestions.value = viewModel.cityFilter.value
+                        },
+                        label = { Text("Select Location") },
+                        singleLine = true,
+                        trailingIcon = {
+                            Icon(imageVector = Icons.Default.Search, contentDescription = null)
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
-                Icon(
-                    painter = painterResource(Res.drawable.ic_down),
-                    contentDescription = null,
-                    modifier = Modifier.size(9.dp),
-                    tint = Color.White
-                )
+                    suggestions.value.takeIf { it.isNotEmpty() }?.let { list ->
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(Color.White)
+                                .padding(8.dp)
+                        ) {
+                            list.forEach { city ->
+                                Text(
+                                    text = city,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            searchQuery.value = city
+                                            suggestions.value = emptyList()
+                                            viewModel.fetchWeatherForCity(city)
+                                        }
+                                        .padding(8.dp)
+                                )
+                            }
+                        }
+                    }
+                }
             }
-            Icon(
-                painter = painterResource(Res.drawable.ic_notification),
-                contentDescription = null,
-                modifier = Modifier.size(24.dp),
-                tint = Color.White
-            )
         }
         Column(
             modifier = Modifier.fillMaxSize().align(Alignment.Center),
@@ -164,7 +201,7 @@ fun HomeScreenContent(weather: WeatherResource, navController: NavController) {
         ) {
             Spacer(modifier = Modifier.size(16.dp))
             Image(
-                painter = painterResource(getImage((weather.weather.getOrNull(0)?.main?:""))),
+                painter = painterResource(getImage((weather.weather.getOrNull(0)?.main ?: ""))),
                 contentDescription = null,
                 modifier = Modifier.size(120.dp)
             )
@@ -172,7 +209,8 @@ fun HomeScreenContent(weather: WeatherResource, navController: NavController) {
 
             Column(
                 modifier = Modifier.padding(16.dp).fillMaxWidth()
-                    .clip(shape = RoundedCornerShape(16.dp)).border(1.dp, Color.White.copy(alpha = 0.6f))
+                    .clip(shape = RoundedCornerShape(16.dp))
+                    .border(1.dp, Color.White.copy(alpha = 0.6f))
                     .background(color = Color.White.copy(alpha = 0.4f)).padding(16.dp),
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -188,7 +226,8 @@ fun HomeScreenContent(weather: WeatherResource, navController: NavController) {
                 )
                 Spacer(modifier = Modifier.size(16.dp))
                 Text(
-                    text = weather.weather.getOrNull(0)?.description ?.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }?: "",
+                    text = weather.weather.getOrNull(0)?.description?.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+                        ?: "",
                     style = MaterialTheme.typography.h6.copy(
                         color = Color.White, fontWeight = FontWeight.Bold
                     )
@@ -210,20 +249,22 @@ fun HomeScreenContent(weather: WeatherResource, navController: NavController) {
         }
         Button(
             onClick = {
-                navController.navigate("forecast")
+                navController.navigate("forecast?city=${weather.name.toString()}")
             },
-            modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp).fillMaxWidth().height(48.dp),
+            modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp).fillMaxWidth()
+                .height(48.dp),
             shape = RoundedCornerShape(16.dp),
-            colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)){
-                Text(
-                    text = "Forecast report",
-                    color = Color.Black,
-                )
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)
+        ) {
+            Text(
+                text = "Forecast report",
+                color = Color.Black,
+            )
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = null,
             )
-            }
+        }
 
     }
 }

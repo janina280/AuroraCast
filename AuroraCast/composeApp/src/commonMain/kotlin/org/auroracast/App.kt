@@ -19,8 +19,9 @@ fun App() {
             composable("home") {
                 HomeScreen(navController)
             }
-            composable("forecast"){
-                ForecastScreen(navController)
+            composable("forecast?city={city}") { backStackEntry ->
+                val city = backStackEntry.arguments?.getString("city") ?: "Unknown"
+                ForecastScreen(navController, city)
             }
         }
     }

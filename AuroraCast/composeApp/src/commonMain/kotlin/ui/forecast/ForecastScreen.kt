@@ -50,11 +50,8 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun ForecastScreen(navController: NavController) {
-    val factory= rememberLocationTrackerFactory(LocationTrackerAccuracy.Best)
-    val locationTracker= remember { factory.createLocationTracker() }
-    BindLocationTrackerEffect(locationTracker)
-    val viewMode: ForecastViewMode= viewModel{ForecastViewMode(locationTracker)}
+fun ForecastScreen(navController: NavController, city: String) {
+    val viewMode: ForecastViewMode= viewModel{ForecastViewMode(city)}
 
     val state=viewMode.state.collectAsState()
     LaunchedEffect(Unit){
