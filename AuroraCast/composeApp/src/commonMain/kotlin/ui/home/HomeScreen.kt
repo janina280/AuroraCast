@@ -24,6 +24,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.material.Text
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Search
@@ -36,9 +37,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import auroracast.composeapp.generated.resources.Res
@@ -152,20 +155,28 @@ fun HomeScreenContent(
                     )
                 }
                 Column(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth().zIndex(1f)
                 ) {
                     OutlinedTextField(
-                        value = searchQuery.value, //weather.name.toString(),
+                        value = searchQuery.value,
                         onValueChange = { query ->
                             searchQuery.value = query
                             viewModel.getCitySuggestions(query)
                             suggestions.value = viewModel.cityFilter.value
                         },
-                        label = { Text("Select Location") },
+                        label = { Text("Select Location", color = Color.White) },
                         singleLine = true,
+                        textStyle = TextStyle(color = Color.White),
                         trailingIcon = {
-                            Icon(imageVector = Icons.Default.Search, contentDescription = null)
+                            Icon(imageVector = Icons.Default.Search, contentDescription = null, tint = Color.White)
                         },
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            textColor = Color.White,
+                            backgroundColor = Color.Transparent,
+                            cursorColor = Color.White,
+                            focusedBorderColor = Color.White,
+                            unfocusedBorderColor = Color.White
+                        ),
                         modifier = Modifier.fillMaxWidth()
                     )
 
@@ -175,6 +186,7 @@ fun HomeScreenContent(
                                 .fillMaxWidth()
                                 .background(Color.White)
                                 .padding(8.dp)
+                                .zIndex(1f)
                         ) {
                             list.forEach { city ->
                                 Text(
